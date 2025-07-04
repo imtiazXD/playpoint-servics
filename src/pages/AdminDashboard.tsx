@@ -1,40 +1,76 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Bell } from "lucide-react";
+import { Bell, Eye, EyeOff } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const AdminDashboard = () => {
-  const [orders] = useState([
-    {
-      id: "ORD001",
-      email: "user1@gmail.com",
-      password: "userpass123",
-      paymentMethod: "bKash",
-      transactionId: "TXN123456789",
-      status: "pending",
-      createdAt: "2024-01-15 10:30 AM"
-    },
-    {
-      id: "ORD002", 
-      email: "user2@gmail.com",
-      password: "mypass456",
-      paymentMethod: "Nagad",
-      transactionId: "NGD987654321",
-      status: "completed",
-      createdAt: "2024-01-15 09:15 AM"
-    },
-    {
-      id: "ORD003",
-      email: "user3@gmail.com", 
-      password: "secure789",
-      paymentMethod: "Rocket",
-      transactionId: "RKT555666777",
-      status: "pending",
-      createdAt: "2024-01-15 08:45 AM"
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [visiblePasswords, setVisiblePasswords] = useState({});
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setOrders(data || []);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch orders",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
+
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ status: newStatus })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      setOrders(orders.map(order => 
+        order.id === orderId ? { ...order, status: newStatus } : order
+      ));
+      
+      toast({
+        title: "Success",
+        description: `Order ${newStatus === 'completed' ? 'marked as done' : 'rejected'}`,
+      });
+    } catch (error) {
+      console.error('Error updating order:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update order status",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const togglePasswordVisibility = (orderId) => {
+    setVisiblePasswords(prev => ({
+      ...prev,
+      [orderId]: !prev[orderId]
+    }));
+  };
 
   const stats = {
     totalOrders: orders.length,
@@ -63,10 +99,10 @@ const AdminDashboard = () => {
         <div className="flex flex-col md:flex-row items-center justify-between mb-6 md:mb-8 gap-4">
           <h1 className="text-2xl md:text-3xl font-bold text-foreground animate-slide-in">Admin Dashboard</h1>
           <div className="flex items-center gap-4">
-            <div className="relative">
-              <Bell className="h-6 w-6 text-muted-foreground" />
+            <div className="relative cursor-pointer hover:scale-110 transition-transform">
+              <Bell className="h-6 w-6 text-muted-foreground hover:text-primary transition-colors" />
               {stats.pendingOrders > 0 && (
-                <span className="absolute -top-2 -right-2 h-5 w-5 bg-destructive text-destructive-foreground rounded-full text-xs flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 h-5 w-5 bg-destructive text-destructive-foreground rounded-full text-xs flex items-center justify-center animate-bounce">
                   {stats.pendingOrders}
                 </span>
               )}
@@ -111,47 +147,95 @@ const AdminDashboard = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="border-border">
-                  <TableHead className="text-muted-foreground">Order ID</TableHead>
-                  <TableHead className="text-muted-foreground">Email</TableHead>
-                  <TableHead className="text-muted-foreground">Password</TableHead>
-                  <TableHead className="text-muted-foreground">Payment</TableHead>
-                  <TableHead className="text-muted-foreground">Transaction ID</TableHead>
-                  <TableHead className="text-muted-foreground">Status</TableHead>
-                  <TableHead className="text-muted-foreground">Created</TableHead>
-                  <TableHead className="text-muted-foreground">Actions</TableHead>
+                    <TableHead className="text-muted-foreground">Order ID</TableHead>
+                    <TableHead className="text-muted-foreground">Gmail</TableHead>
+                    <TableHead className="text-muted-foreground">Password</TableHead>
+                    <TableHead className="text-muted-foreground">Payment Method</TableHead>
+                    <TableHead className="text-muted-foreground">Transaction ID</TableHead>
+                    <TableHead className="text-muted-foreground">Status</TableHead>
+                    <TableHead className="text-muted-foreground">Date</TableHead>
+                    <TableHead className="text-muted-foreground">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orders.map((order) => (
-                    <TableRow key={order.id} className="border-border hover:bg-muted/20 transition-colors">
-                      <TableCell className="font-medium text-foreground">{order.id}</TableCell>
-                      <TableCell className="text-foreground">{order.email}</TableCell>
-                      <TableCell className="text-foreground font-mono text-sm">{order.password}</TableCell>
-                      <TableCell className="text-foreground">{order.paymentMethod}</TableCell>
-                      <TableCell className="text-foreground">{order.transactionId}</TableCell>
-                      <TableCell>{getStatusBadge(order.status)}</TableCell>
-                      <TableCell className="text-muted-foreground">{order.createdAt}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          {order.status === "pending" && (
-                            <>
-                              <Button size="sm" variant="gaming">
-                                Mark Done
-                              </Button>
-                              <Button size="sm" variant="destructive">
-                                Reject
-                              </Button>
-                            </>
-                          )}
-                          {order.status === "completed" && (
-                            <Button size="sm" variant="outline">
-                              View Details
-                            </Button>
-                          )}
-                        </div>
+                  {loading ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-8">
+                        <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
+                        <p className="text-muted-foreground mt-2">Loading orders...</p>
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : orders.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                        No orders found
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    orders.map((order) => (
+                      <TableRow key={order.id} className="border-border hover:bg-muted/20 transition-colors">
+                        <TableCell className="font-medium text-foreground">{order.id.slice(0, 8)}...</TableCell>
+                        <TableCell className="text-foreground">{order.gmail}</TableCell>
+                        <TableCell className="text-foreground font-mono text-sm">
+                          <div className="flex items-center gap-2">
+                            <span>
+                              {visiblePasswords[order.id] ? order.password : '••••••••'}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => togglePasswordVisibility(order.id)}
+                              className="h-6 w-6 p-0"
+                            >
+                              {visiblePasswords[order.id] ? 
+                                <EyeOff className="h-3 w-3" /> : 
+                                <Eye className="h-3 w-3" />
+                              }
+                            </Button>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-foreground">{order.payment_method}</TableCell>
+                        <TableCell className="text-foreground">{order.transaction_id}</TableCell>
+                        <TableCell>{getStatusBadge(order.status)}</TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {new Date(order.created_at).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2 flex-wrap">
+                            {order.status === "pending" && (
+                              <>
+                                <Button 
+                                  size="sm" 
+                                  variant="gaming"
+                                  onClick={() => updateOrderStatus(order.id, 'completed')}
+                                  className="animate-glow-pulse"
+                                >
+                                  Mark Done
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="destructive"
+                                  onClick={() => updateOrderStatus(order.id, 'rejected')}
+                                >
+                                  Reject
+                                </Button>
+                              </>
+                            )}
+                            {order.status === "completed" && (
+                              <Button size="sm" variant="outline" disabled>
+                                Completed
+                              </Button>
+                            )}
+                            {order.status === "rejected" && (
+                              <Button size="sm" variant="destructive" disabled>
+                                Rejected
+                              </Button>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </div>
