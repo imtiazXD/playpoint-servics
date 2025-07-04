@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ const Order = () => {
     gmail: "",
     password: "",
     playPointName: "",
+    selectedPlan: "",
     paymentMethod: "",
     transactionId: "",
     fastDelivery: false,
@@ -23,12 +24,40 @@ const Order = () => {
   const [submitting, setSubmitting] = useState(false);
   
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
+
+  const plans = {
+    basic: { name: "Basic Account", price: 150, delivery: "24hr" },
+    premium: { name: "Premium Account", price: 250, delivery: "12hr" },
+    express: { name: "Express Account", price: 350, delivery: "6hr" }
+  };
+
+  const calculateTotalPrice = () => {
+    if (!formData.selectedPlan) return 0;
+    const basePrice = plans[formData.selectedPlan as keyof typeof plans]?.price || 0;
+    return basePrice + (formData.fastDelivery ? 50 : 0);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!formData.selectedPlan) {
+      toast({
+        title: "Plan Required",
+        description: "Please select a plan to continue.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (!formData.termsAccepted) {
       toast({
         title: "Terms Required",
@@ -72,6 +101,7 @@ const Order = () => {
           gmail: "",
           password: "",
           playPointName: "",
+          selectedPlan: "",
           paymentMethod: "",
           transactionId: "",
           fastDelivery: false,
@@ -166,6 +196,20 @@ const Order = () => {
             </div>
 
             <div className="space-y-2">
+              <Label className="text-foreground">Select Plan *</Label>
+              <Select value={formData.selectedPlan} onValueChange={(value) => setFormData({...formData, selectedPlan: value})}>
+                <SelectTrigger className="bg-background border-border">
+                  <SelectValue placeholder="Choose your plan" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="basic">Basic Account - ৳150 (24hr delivery)</SelectItem>
+                  <SelectItem value="premium">Premium Account - ৳250 (12hr delivery)</SelectItem>
+                  <SelectItem value="express">Express Account - ৳350 (6hr delivery)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="playPointName" className="text-foreground">Play Point Name</Label>
               <Input
                 id="playPointName"
@@ -201,7 +245,12 @@ const Order = () => {
                 className="bg-background border-border"
               />
               <p className="text-xs text-muted-foreground">
-                Send money to: 01XXXXXXXXX | Then enter the transaction ID here
+                Send money to: 01XXXXXXXXX
+                {formData.selectedPlan && (
+                  <span className="block mt-1 font-medium text-primary">
+                    Amount to send: ৳{calculateTotalPrice()}
+                  </span>
+                )}
               </p>
             </div>
 
@@ -231,7 +280,7 @@ const Order = () => {
               type="submit" 
               variant="gaming" 
               className="w-full"
-              disabled={!formData.gmail || !formData.password || !formData.paymentMethod || !formData.transactionId || submitting}
+              disabled={!formData.gmail || !formData.password || !formData.selectedPlan || !formData.paymentMethod || !formData.transactionId || submitting}
             >
               {submitting ? "Submitting Order..." : "Submit Order"}
             </Button>
