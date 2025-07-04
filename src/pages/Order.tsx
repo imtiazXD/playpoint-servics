@@ -3,10 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const Order = () => {
   const [formData, setFormData] = useState({
@@ -15,12 +17,16 @@ const Order = () => {
     playPointName: "",
     paymentMethod: "",
     transactionId: "",
+    fastDelivery: false,
     termsAccepted: false
   });
+  const [submitting, setSubmitting] = useState(false);
   
   const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.termsAccepted) {
@@ -32,21 +38,61 @@ const Order = () => {
       return;
     }
 
-    // Simulate order submission
-    toast({
-      title: "Order Submitted Successfully!",
-      description: "We'll start working on your account within 2 hours. Check your email for updates.",
-    });
+    setSubmitting(true);
 
-    // Reset form
-    setFormData({
-      gmail: "",
-      password: "",
-      playPointName: "",
-      paymentMethod: "",
-      transactionId: "",
-      termsAccepted: false
-    });
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .insert({
+          gmail: formData.gmail,
+          password: formData.password,
+          play_point_name: formData.playPointName || null,
+          payment_method: formData.paymentMethod,
+          transaction_id: formData.transactionId,
+          fast_delivery: formData.fastDelivery,
+          user_id: user?.id || null,
+          status: 'pending'
+        });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to submit order. Please try again.",
+          variant: "destructive"
+        });
+        console.error('Error submitting order:', error);
+      } else {
+        toast({
+          title: "Order Submitted Successfully!",
+          description: "We'll start working on your account within 2 hours. Check your email for updates.",
+        });
+
+        // Reset form
+        setFormData({
+          gmail: "",
+          password: "",
+          playPointName: "",
+          paymentMethod: "",
+          transactionId: "",
+          fastDelivery: false,
+          termsAccepted: false
+        });
+
+        // Redirect to dashboard if logged in
+        if (user) {
+          navigate('/dashboard');
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -56,6 +102,39 @@ const Order = () => {
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-foreground mb-2">Place Your Order</h1>
             <p className="text-muted-foreground">Fill out the form below to get your Play Point account</p>
+            {!user && (
+              <p className="text-sm text-yellow-400 mt-2">
+                💡 <a href="/auth" className="underline">Login or sign up</a> to track your orders
+              </p>
+            )}
+          </div>
+
+          {/* Pricing Plans */}
+          <div className="mb-8">
+            <h3 className="text-lg font-bold text-foreground mb-4">Available Plans</h3>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="border border-border rounded-lg p-4 bg-background/30">
+                <div className="text-center">
+                  <h4 className="font-bold text-foreground">Basic Account</h4>
+                  <div className="text-xl font-bold text-primary">৳150</div>
+                  <div className="text-sm text-muted-foreground">24hr Delivery</div>
+                </div>
+              </div>
+              <div className="border border-border rounded-lg p-4 bg-background/30">
+                <div className="text-center">
+                  <h4 className="font-bold text-foreground">Premium Account</h4>
+                  <div className="text-xl font-bold text-primary">৳250</div>
+                  <div className="text-sm text-muted-foreground">12hr Delivery</div>
+                </div>
+              </div>
+              <div className="border border-border rounded-lg p-4 bg-background/30">
+                <div className="text-center">
+                  <h4 className="font-bold text-foreground">Express Account</h4>
+                  <div className="text-xl font-bold text-primary">৳350</div>
+                  <div className="text-sm text-muted-foreground">6hr Delivery</div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -128,6 +207,17 @@ const Order = () => {
 
             <div className="flex items-center space-x-2">
               <Checkbox
+                id="fastDelivery"
+                checked={formData.fastDelivery}
+                onCheckedChange={(checked) => setFormData({...formData, fastDelivery: checked as boolean})}
+              />
+              <Label htmlFor="fastDelivery" className="text-sm text-muted-foreground">
+                Fast Delivery (+৳50 - Priority processing)
+              </Label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
                 id="terms"
                 checked={formData.termsAccepted}
                 onCheckedChange={(checked) => setFormData({...formData, termsAccepted: checked as boolean})}
@@ -141,9 +231,9 @@ const Order = () => {
               type="submit" 
               variant="gaming" 
               className="w-full"
-              disabled={!formData.gmail || !formData.password || !formData.paymentMethod || !formData.transactionId}
+              disabled={!formData.gmail || !formData.password || !formData.paymentMethod || !formData.transactionId || submitting}
             >
-              Submit Order
+              {submitting ? "Submitting Order..." : "Submit Order"}
             </Button>
           </form>
 
