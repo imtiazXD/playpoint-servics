@@ -54,18 +54,11 @@ const Navigation = () => {
                 </Button>
               </div>
             ) : (
-              <div className="flex items-center gap-3">
-                <Link to="/auth">
-                  <Button variant="outline" size="sm">
-                    Login
-                  </Button>
-                </Link>
-                <Link to="/admin">
-                  <Button variant="outline" size="sm">
-                    Admin
-                  </Button>
-                </Link>
-              </div>
+              <Link to="/auth">
+                <Button variant="outline" size="sm">
+                  Login
+                </Button>
+              </Link>
             )}
           </div>
           
