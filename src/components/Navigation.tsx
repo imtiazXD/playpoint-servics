@@ -18,20 +18,20 @@ const Navigation = () => {
   return (
     <nav className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">P</span>
+        <div className="flex h-14 md:h-16 items-center justify-between">
+          <Link to="/" className="flex items-center space-x-2 hover:scale-105 transition-transform duration-300">
+            <div className="h-6 w-6 md:h-8 md:w-8 rounded-lg bg-gradient-primary flex items-center justify-center animate-glow-pulse">
+              <span className="text-primary-foreground font-bold text-sm md:text-lg">P</span>
             </div>
-            <span className="text-xl font-bold text-foreground">Play Point</span>
+            <span className="text-lg md:text-xl font-bold text-foreground">Play Point</span>
           </Link>
           
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 to={item.href}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
+                className={`text-sm font-medium transition-all duration-300 hover:text-primary hover:scale-105 ${
                   isActive(item.href) 
                     ? "text-primary" 
                     : "text-muted-foreground"
@@ -41,31 +41,41 @@ const Navigation = () => {
               </Link>
             ))}
             {user ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 lg:gap-3">
                 <Link to="/dashboard">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="hover:shadow-glow transition-all duration-300">
                     <User className="h-4 w-4 mr-2" />
-                    Dashboard
+                    <span className="hidden lg:inline">Dashboard</span>
                   </Button>
                 </Link>
-                <Button variant="outline" size="sm" onClick={() => signOut()}>
+                <Button variant="outline" size="sm" onClick={() => signOut()} className="hover:shadow-glow transition-all duration-300">
                   <LogOut className="h-4 w-4 mr-2" />
-                  Logout
+                  <span className="hidden lg:inline">Logout</span>
                 </Button>
               </div>
             ) : (
               <Link to="/auth">
-                <Button variant="outline" size="sm">
+                <Button variant="gaming" size="sm">
                   Login
                 </Button>
               </Link>
             )}
           </div>
           
-          <div className="md:hidden">
-            <Button variant="ghost" size="sm">
-              Menu
-            </Button>
+          <div className="md:hidden flex items-center gap-2">
+            {user ? (
+              <Link to="/dashboard">
+                <Button variant="outline" size="sm" className="text-xs">
+                  <User className="h-3 w-3" />
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/auth">
+                <Button variant="gaming" size="sm" className="text-xs">
+                  Login
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>

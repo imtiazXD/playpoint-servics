@@ -57,11 +57,11 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-hero p-6">
+    <div className="min-h-screen bg-gradient-hero p-4 md:p-6">
       <div className="container mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
+        <div className="flex flex-col md:flex-row items-center justify-between mb-6 md:mb-8 gap-4">
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground animate-slide-in">Admin Dashboard</h1>
           <div className="flex items-center gap-4">
             <div className="relative">
               <Bell className="h-6 w-6 text-muted-foreground" />
@@ -76,55 +76,57 @@ const AdminDashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gradient-card border-border p-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+          <Card className="bg-gradient-card border-border p-4 md:p-6 hover:shadow-glow transition-all duration-300 animate-slide-in" style={{animationDelay: '0.1s'}}>
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-primary">{stats.totalOrders}</h3>
-              <p className="text-muted-foreground">Total Orders</p>
+              <h3 className="text-xl md:text-2xl font-bold text-primary">{stats.totalOrders}</h3>
+              <p className="text-sm md:text-base text-muted-foreground">Total Orders</p>
             </div>
           </Card>
-          <Card className="bg-gradient-card border-border p-6">
+          <Card className="bg-gradient-card border-border p-4 md:p-6 hover:shadow-glow transition-all duration-300 animate-slide-in" style={{animationDelay: '0.2s'}}>
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-secondary">{stats.pendingOrders}</h3>
-              <p className="text-muted-foreground">Pending Orders</p>
+              <h3 className="text-xl md:text-2xl font-bold text-secondary">{stats.pendingOrders}</h3>
+              <p className="text-sm md:text-base text-muted-foreground">Pending Orders</p>
             </div>
           </Card>
-          <Card className="bg-gradient-card border-border p-6">
+          <Card className="bg-gradient-card border-border p-4 md:p-6 hover:shadow-glow transition-all duration-300 animate-slide-in" style={{animationDelay: '0.3s'}}>
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-accent">{stats.completedOrders}</h3>
-              <p className="text-muted-foreground">Completed Orders</p>
+              <h3 className="text-xl md:text-2xl font-bold text-accent">{stats.completedOrders}</h3>
+              <p className="text-sm md:text-base text-muted-foreground">Completed Orders</p>
             </div>
           </Card>
-          <Card className="bg-gradient-card border-border p-6">
+          <Card className="bg-gradient-card border-border p-4 md:p-6 hover:shadow-glow transition-all duration-300 animate-slide-in" style={{animationDelay: '0.4s'}}>
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-primary">৳{stats.totalIncome}</h3>
-              <p className="text-muted-foreground">Total Income</p>
+              <h3 className="text-xl md:text-2xl font-bold text-primary">৳{stats.totalIncome}</h3>
+              <p className="text-sm md:text-base text-muted-foreground">Total Income</p>
             </div>
           </Card>
         </div>
 
         {/* Orders Table */}
-        <Card className="bg-gradient-card border-border">
-          <div className="p-6">
-            <h2 className="text-xl font-bold text-foreground mb-4">Recent Orders</h2>
+        <Card className="bg-gradient-card border-border animate-slide-in" style={{animationDelay: '0.5s'}}>
+          <div className="p-4 md:p-6">
+            <h2 className="text-lg md:text-xl font-bold text-foreground mb-4">Recent Orders</h2>
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="border-border">
-                    <TableHead className="text-muted-foreground">Order ID</TableHead>
-                    <TableHead className="text-muted-foreground">Email</TableHead>
-                    <TableHead className="text-muted-foreground">Payment</TableHead>
-                    <TableHead className="text-muted-foreground">Transaction ID</TableHead>
-                    <TableHead className="text-muted-foreground">Status</TableHead>
-                    <TableHead className="text-muted-foreground">Created</TableHead>
-                    <TableHead className="text-muted-foreground">Actions</TableHead>
+                  <TableHead className="text-muted-foreground">Order ID</TableHead>
+                  <TableHead className="text-muted-foreground">Email</TableHead>
+                  <TableHead className="text-muted-foreground">Password</TableHead>
+                  <TableHead className="text-muted-foreground">Payment</TableHead>
+                  <TableHead className="text-muted-foreground">Transaction ID</TableHead>
+                  <TableHead className="text-muted-foreground">Status</TableHead>
+                  <TableHead className="text-muted-foreground">Created</TableHead>
+                  <TableHead className="text-muted-foreground">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {orders.map((order) => (
-                    <TableRow key={order.id} className="border-border">
+                    <TableRow key={order.id} className="border-border hover:bg-muted/20 transition-colors">
                       <TableCell className="font-medium text-foreground">{order.id}</TableCell>
                       <TableCell className="text-foreground">{order.email}</TableCell>
+                      <TableCell className="text-foreground font-mono text-sm">{order.password}</TableCell>
                       <TableCell className="text-foreground">{order.paymentMethod}</TableCell>
                       <TableCell className="text-foreground">{order.transactionId}</TableCell>
                       <TableCell>{getStatusBadge(order.status)}</TableCell>

@@ -126,38 +126,38 @@ const Order = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-hero py-12 px-4">
+    <div className="min-h-screen bg-gradient-hero py-6 md:py-12 px-4">
       <div className="container mx-auto max-w-2xl">
-        <Card className="bg-gradient-card border-border p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Place Your Order</h1>
-            <p className="text-muted-foreground">Fill out the form below to get your Play Point account</p>
+        <Card className="bg-gradient-card border-border p-4 md:p-8 animate-slide-in">
+          <div className="text-center mb-6 md:mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2 animate-bounce-gentle">Place Your Order</h1>
+            <p className="text-sm md:text-base text-muted-foreground">Fill out the form below to get your Play Point account</p>
             {!user && (
-              <p className="text-sm text-yellow-400 mt-2">
+              <p className="text-xs md:text-sm text-yellow-400 mt-2">
                 💡 <a href="/auth" className="underline">Login or sign up</a> to track your orders
               </p>
             )}
           </div>
 
           {/* Pricing Plans */}
-          <div className="mb-8">
-            <h3 className="text-lg font-bold text-foreground mb-4">Available Plans</h3>
-            <div className="grid md:grid-cols-3 gap-4">
-              <div className="border border-border rounded-lg p-4 bg-background/30">
+          <div className="mb-6 md:mb-8">
+            <h3 className="text-lg font-bold text-foreground mb-4 animate-slide-in">Available Plans</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="border border-border rounded-lg p-4 bg-background/30 hover:shadow-glow transition-all duration-300 hover:scale-105 animate-slide-in" style={{animationDelay: '0.1s'}}>
                 <div className="text-center">
                   <h4 className="font-bold text-foreground">Basic Account</h4>
                   <div className="text-xl font-bold text-primary">৳150</div>
                   <div className="text-sm text-muted-foreground">24hr Delivery</div>
                 </div>
               </div>
-              <div className="border border-border rounded-lg p-4 bg-background/30">
+              <div className="border border-border rounded-lg p-4 bg-background/30 hover:shadow-intense transition-all duration-300 hover:scale-105 animate-slide-in" style={{animationDelay: '0.2s'}}>
                 <div className="text-center">
                   <h4 className="font-bold text-foreground">Premium Account</h4>
                   <div className="text-xl font-bold text-primary">৳250</div>
                   <div className="text-sm text-muted-foreground">12hr Delivery</div>
                 </div>
               </div>
-              <div className="border border-border rounded-lg p-4 bg-background/30">
+              <div className="border border-border rounded-lg p-4 bg-background/30 hover:shadow-glow transition-all duration-300 hover:scale-105 animate-slide-in" style={{animationDelay: '0.3s'}}>
                 <div className="text-center">
                   <h4 className="font-bold text-foreground">Express Account</h4>
                   <div className="text-xl font-bold text-primary">৳350</div>

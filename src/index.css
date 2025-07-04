@@ -42,10 +42,15 @@
     --gradient-hero: linear-gradient(135deg, hsl(220 27% 8%), hsl(220 25% 12%));
     --gradient-card: linear-gradient(135deg, hsl(220 25% 10%), hsl(220 20% 12%));
     
-    /* Gaming effects */
-    --shadow-glow: 0 0 40px hsl(217 91% 60% / 0.3);
-    --shadow-card: 0 10px 30px -10px hsl(220 27% 8% / 0.5);
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Gaming effects */
+  --shadow-glow: 0 0 40px hsl(217 91% 60% / 0.3);
+  --shadow-card: 0 10px 30px -10px hsl(220 27% 8% / 0.5);
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Animation enhancements */
+  --shadow-intense: 0 0 60px hsl(217 91% 60% / 0.5);
+  --gradient-animated: linear-gradient(45deg, hsl(217 91% 60%), hsl(269 79% 65%), hsl(142 76% 36%), hsl(217 91% 60%));
+  --border-glow: 0 0 20px hsl(217 91% 60% / 0.4);
 
     --sidebar-background: 0 0% 98%;
 
