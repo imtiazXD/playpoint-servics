@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { LogOut, User, Menu, X } from "lucide-react";
 import { useState } from "react";
+import NotificationBell from "./NotificationBell";
 
 const Navigation = () => {
   const location = useLocation();
@@ -44,6 +45,7 @@ const Navigation = () => {
             ))}
             {user ? (
               <div className="flex items-center gap-2 lg:gap-3">
+                <NotificationBell />
                 <Link to="/dashboard">
                   <Button variant="outline" size="sm" className="hover:shadow-glow transition-all duration-300">
                     <User className="h-4 w-4 mr-2" />
@@ -94,36 +96,39 @@ const Navigation = () => {
                   {item.label}
                 </Link>
               ))}
-              <div className="pt-3 border-t border-border/50 space-y-2">
-                {user ? (
-                  <>
-                    <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                      <Button variant="outline" size="sm" className="w-full justify-start">
-                        <User className="h-4 w-4 mr-2" />
-                        Dashboard
-                      </Button>
-                    </Link>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => {
-                        signOut();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="w-full justify-start"
-                    >
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Logout
-                    </Button>
-                  </>
-                ) : (
-                  <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="gaming" size="sm" className="w-full">
-                      Login
-                    </Button>
-                  </Link>
-                )}
-              </div>
+               <div className="pt-3 border-t border-border/50 space-y-2">
+                 {user ? (
+                   <>
+                     <div className="flex justify-center mb-2">
+                       <NotificationBell />
+                     </div>
+                     <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                       <Button variant="outline" size="sm" className="w-full justify-start">
+                         <User className="h-4 w-4 mr-2" />
+                         Dashboard
+                       </Button>
+                     </Link>
+                     <Button 
+                       variant="outline" 
+                       size="sm" 
+                       onClick={() => {
+                         signOut();
+                         setMobileMenuOpen(false);
+                       }}
+                       className="w-full justify-start"
+                     >
+                       <LogOut className="h-4 w-4 mr-2" />
+                       Logout
+                     </Button>
+                   </>
+                 ) : (
+                   <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                     <Button variant="gaming" size="sm" className="w-full">
+                       Login
+                     </Button>
+                   </Link>
+                 )}
+               </div>
             </div>
           </div>
         )}
