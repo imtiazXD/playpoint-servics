@@ -9,12 +9,46 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      order_plans: {
+        Row: {
+          created_at: string
+          description: string | null
+          features: string[] | null
+          id: string
+          is_active: boolean
+          name: string
+          price: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          features?: string[] | null
+          id?: string
+          is_active?: boolean
+          name: string
+          price: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          features?: string[] | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          price?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           created_at: string
           fast_delivery: boolean
           gmail: string
           id: string
+          order_plan_id: string | null
           password: string
           payment_method: string
           play_point_name: string | null
@@ -28,6 +62,7 @@ export type Database = {
           fast_delivery?: boolean
           gmail: string
           id?: string
+          order_plan_id?: string | null
           password: string
           payment_method: string
           play_point_name?: string | null
@@ -41,6 +76,7 @@ export type Database = {
           fast_delivery?: boolean
           gmail?: string
           id?: string
+          order_plan_id?: string | null
           password?: string
           payment_method?: string
           play_point_name?: string | null
@@ -49,7 +85,15 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "orders_order_plan_id_fkey"
+            columns: ["order_plan_id"]
+            isOneToOne: false
+            referencedRelation: "order_plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {

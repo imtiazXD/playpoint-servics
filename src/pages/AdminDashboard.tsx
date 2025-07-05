@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Bell, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import PlanManagement from "@/components/admin/PlanManagement";
 
 const AdminDashboard = () => {
   const [orders, setOrders] = useState([]);
@@ -241,6 +242,11 @@ const AdminDashboard = () => {
             </div>
           </div>
         </Card>
+
+        {/* Plan Management */}
+        <div className="mt-6 md:mt-8">
+          <PlanManagement />
+        </div>
       </div>
     </div>
   );
