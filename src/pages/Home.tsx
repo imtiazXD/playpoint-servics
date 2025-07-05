@@ -1,25 +1,52 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Home = () => {
-  const pricingPlans = [
-    {
-      name: "Basic Account",
-      price: "৳150",
-      features: ["Gmail Setup", "Basic Profile", "24hr Delivery", "Support"]
-    },
-    {
-      name: "Premium Account", 
-      price: "৳250",
-      features: ["Gmail Setup", "Full Profile", "12hr Delivery", "Priority Support", "Extra Security"]
-    },
-    {
-      name: "Express Account",
-      price: "৳350", 
-      features: ["Gmail Setup", "Full Profile", "6hr Delivery", "VIP Support", "Max Security", "Free Backup"]
-    }
-  ];
+  const [pricingPlans, setPricingPlans] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('order_plans')
+          .select('*')
+          .eq('is_active', true)
+          .order('price', { ascending: true });
+
+        if (error) throw error;
+        
+        setPricingPlans(data || []);
+      } catch (error) {
+        console.error('Error fetching plans:', error);
+        // Fallback to hardcoded plans if fetch fails
+        setPricingPlans([
+          {
+            name: "Basic Account",
+            price: 150,
+            features: ["Gmail Setup", "Basic Profile", "24hr Delivery", "Support"]
+          },
+          {
+            name: "Premium Account", 
+            price: 250,
+            features: ["Gmail Setup", "Full Profile", "12hr Delivery", "Priority Support", "Extra Security"]
+          },
+          {
+            name: "Express Account",
+            price: 350, 
+            features: ["Gmail Setup", "Full Profile", "6hr Delivery", "VIP Support", "Max Security", "Free Backup"]
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPlans();
+  }, []);
 
   const testimonials = [
     {
@@ -73,17 +100,22 @@ const Home = () => {
             Choose Your Plan
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
-            {pricingPlans.map((plan, index) => (
+            {loading ? (
+              <div className="col-span-full text-center py-8">
+                <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
+                <p className="text-muted-foreground mt-2">Loading plans...</p>
+              </div>
+            ) : pricingPlans.map((plan, index) => (
               <Card 
-                key={index} 
+                key={plan.id || index} 
                 className="bg-gradient-card border-border p-4 md:p-6 hover:shadow-intense hover:scale-105 transition-all duration-300 animate-slide-in" 
                 style={{animationDelay: `${index * 0.1}s`}}
               >
                 <div className="text-center">
                   <h3 className="text-lg md:text-xl font-bold mb-2 text-foreground">{plan.name}</h3>
-                  <div className="text-2xl md:text-3xl font-bold text-primary mb-4 md:mb-6">{plan.price}</div>
+                  <div className="text-2xl md:text-3xl font-bold text-primary mb-4 md:mb-6">৳{plan.price}</div>
                   <ul className="space-y-2 md:space-y-3 mb-4 md:mb-6">
-                    {plan.features.map((feature, i) => (
+                    {(plan.features || []).map((feature, i) => (
                       <li key={i} className="text-sm md:text-base text-muted-foreground">✓ {feature}</li>
                     ))}
                   </ul>
