@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import { MessageSquare } from "lucide-react";
+import Messages from "@/components/Messages";
 
 interface Order {
   id: string;
@@ -25,6 +27,8 @@ const Dashboard = () => {
   const { toast } = useToast();
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
+  const [showMessages, setShowMessages] = useState(false);
+  const [unreadMessageCount, setUnreadMessageCount] = useState(0);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -103,6 +107,21 @@ const Dashboard = () => {
             <p className="text-muted-foreground">Welcome back, {user.email}</p>
           </div>
           <div className="flex gap-4">
+            <Button 
+              variant={showMessages ? "default" : "outline"} 
+              onClick={() => setShowMessages(!showMessages)}
+              className="relative"
+            >
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Messages
+              {unreadMessageCount > 0 && (
+                <Badge 
+                  className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-red-500 text-white border-0"
+                >
+                  {unreadMessageCount > 9 ? '9+' : unreadMessageCount}
+                </Badge>
+              )}
+            </Button>
             <Link to="/order">
               <Button variant="gaming">
                 New Order
@@ -147,6 +166,13 @@ const Dashboard = () => {
             </div>
           </Card>
         </div>
+
+        {/* Messages Section */}
+        <Messages 
+          isOpen={showMessages} 
+          onClose={() => setShowMessages(false)}
+          onUnreadCountChange={setUnreadMessageCount}
+        />
 
         {/* Orders List */}
         <Card className="bg-gradient-card border-border p-6">
