@@ -42,7 +42,15 @@ const MessageManagement = () => {
         .from('profiles')
         .select('user_id, display_name');
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching users:', error);
+        toast({
+          title: "Warning",
+          description: "Could not fetch user list. You can still send messages to all users.",
+          variant: "destructive"
+        });
+        return;
+      }
       
       // For now, we'll create a simple list. In a real app, you'd have a proper user management system
       setUsers(data?.map(profile => ({
@@ -51,6 +59,11 @@ const MessageManagement = () => {
       })) || []);
     } catch (error) {
       console.error('Error fetching users:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch users",
+        variant: "destructive"
+      });
     }
   };
 
@@ -82,23 +95,46 @@ const MessageManagement = () => {
     setLoading(true);
     try {
       if (selectedUser === "all") {
-        // Send to all users
-        const notifications = users.map(user => ({
-          user_id: user.id,
-          message: message.trim(),
-          status: 'unread'
-        }));
+        // Send to all users - if no users found, send to all authenticated users with null user_id
+        if (users.length === 0) {
+          const { error } = await supabase
+            .from('notifications')
+            .insert({
+              user_id: null, // null means message for all users
+              message: message.trim(),
+              status: 'unread'
+            });
 
-        const { error } = await supabase
-          .from('notifications')
-          .insert(notifications);
+          if (error) {
+            console.error('Error sending message to all users:', error);
+            throw error;
+          }
 
-        if (error) throw error;
+          toast({
+            title: "Success",
+            description: "Message sent to all users",
+          });
+        } else {
+          const notifications = users.map(user => ({
+            user_id: user.id,
+            message: message.trim(),
+            status: 'unread'
+          }));
 
-        toast({
-          title: "Success",
-          description: `Message sent to all users (${users.length})`,
-        });
+          const { error } = await supabase
+            .from('notifications')
+            .insert(notifications);
+
+          if (error) {
+            console.error('Error sending messages:', error);
+            throw error;
+          }
+
+          toast({
+            title: "Success",
+            description: `Message sent to all users (${users.length})`,
+          });
+        }
       } else {
         // Send to specific user
         const { error } = await supabase
@@ -109,7 +145,10 @@ const MessageManagement = () => {
             status: 'unread'
           });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error sending message to user:', error);
+          throw error;
+        }
 
         toast({
           title: "Success",
