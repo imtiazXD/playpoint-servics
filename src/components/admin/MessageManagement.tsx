@@ -11,7 +11,7 @@ import { Send, Users, User } from "lucide-react";
 
 interface User {
   id: string;
-  email: string;
+  name: string;
 }
 
 interface Notification {
@@ -55,7 +55,7 @@ const MessageManagement = () => {
       // For now, we'll create a simple list. In a real app, you'd have a proper user management system
       setUsers(data?.map(profile => ({
         id: profile.user_id,
-        email: profile.display_name || 'Unknown User'
+        name: profile.display_name || 'Unknown User'
       })) || []);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -198,7 +198,7 @@ const MessageManagement = () => {
                   <SelectItem key={user.id} value={user.id}>
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4" />
-                      {user.email}
+                      {user.name}
                     </div>
                   </SelectItem>
                 ))}

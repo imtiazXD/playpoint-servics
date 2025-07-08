@@ -11,7 +11,7 @@ import { useEffect } from "react";
 
 const Auth = () => {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
-  const [signupData, setSignupData] = useState({ email: "", password: "", confirmPassword: "" });
+  const [signupData, setSignupData] = useState({ email: "", password: "", confirmPassword: "", name: "" });
   const [loading, setLoading] = useState(false);
   
   const { toast } = useToast();
@@ -61,7 +61,7 @@ const Auth = () => {
 
     setLoading(true);
 
-    const { error } = await signUp(signupData.email, signupData.password);
+    const { error } = await signUp(signupData.email, signupData.password, signupData.name);
 
     if (error) {
       toast({
@@ -136,6 +136,19 @@ const Auth = () => {
           
           <TabsContent value="signup">
             <form onSubmit={handleSignup} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="signup-name" className="text-foreground">Full Name</Label>
+                <Input
+                  id="signup-name"
+                  type="text"
+                  placeholder="Enter your full name"
+                  value={signupData.name}
+                  onChange={(e) => setSignupData({...signupData, name: e.target.value})}
+                  required
+                  className="bg-background border-border"
+                />
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="signup-email" className="text-foreground">Email</Label>
                 <Input
