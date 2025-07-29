@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { LogOut, User, Menu, X } from "lucide-react";
 import { useState } from "react";
 import NotificationBell from "./NotificationBell";
+import { FloatingElement } from "@/components/ui/floating-elements";
 
 const Navigation = () => {
   const location = useLocation();
@@ -23,9 +24,11 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex h-14 md:h-16 items-center justify-between">
           <Link to="/" className="flex items-center space-x-2 hover:scale-105 transition-transform duration-300">
-            <div className="h-6 w-6 md:h-8 md:w-8 rounded-lg bg-gradient-primary flex items-center justify-center animate-glow-pulse">
+            <FloatingElement floatDirection="circular" duration={4} intensity={2}>
+              <div className="h-6 w-6 md:h-8 md:w-8 rounded-lg bg-gradient-primary flex items-center justify-center animate-glow-pulse">
               <span className="text-primary-foreground font-bold text-sm md:text-lg">P</span>
-            </div>
+              </div>
+            </FloatingElement>
             <span className="text-lg md:text-xl font-bold text-foreground">Play Point</span>
           </Link>
           
@@ -47,19 +50,19 @@ const Navigation = () => {
               <div className="flex items-center gap-2 lg:gap-3">
                 <NotificationBell />
                 <Link to="/dashboard">
-                  <Button variant="outline" size="sm" className="hover:shadow-glow transition-all duration-300">
+                  <Button variant="outline" size="sm" className="hover:shadow-glow hover:animate-wiggle transition-all duration-300">
                     <User className="h-4 w-4 mr-2" />
                     <span className="hidden lg:inline">Dashboard</span>
                   </Button>
                 </Link>
-                <Button variant="outline" size="sm" onClick={() => signOut()} className="hover:shadow-glow transition-all duration-300">
+                <Button variant="outline" size="sm" onClick={() => signOut()} className="hover:shadow-glow hover:animate-shake transition-all duration-300">
                   <LogOut className="h-4 w-4 mr-2" />
                   <span className="hidden lg:inline">Logout</span>
                 </Button>
               </div>
             ) : (
               <Link to="/auth">
-                <Button variant="gaming" size="sm">
+                <Button variant="gaming" size="sm" className="hover:animate-heartbeat">
                   Login
                 </Button>
               </Link>
@@ -103,7 +106,7 @@ const Navigation = () => {
                        <NotificationBell />
                      </div>
                      <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                       <Button variant="outline" size="sm" className="w-full justify-start">
+                       <Button variant="outline" size="sm" className="w-full justify-start hover:animate-wiggle">
                          <User className="h-4 w-4 mr-2" />
                          Dashboard
                        </Button>
@@ -115,7 +118,7 @@ const Navigation = () => {
                          signOut();
                          setMobileMenuOpen(false);
                        }}
-                       className="w-full justify-start"
+                       className="w-full justify-start hover:animate-shake"
                      >
                        <LogOut className="h-4 w-4 mr-2" />
                        Logout
@@ -123,7 +126,7 @@ const Navigation = () => {
                    </>
                  ) : (
                    <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
-                     <Button variant="gaming" size="sm" className="w-full">
+                     <Button variant="gaming" size="sm" className="w-full hover:animate-heartbeat">
                        Login
                      </Button>
                    </Link>

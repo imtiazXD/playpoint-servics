@@ -9,6 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { AnimatedCard } from "@/components/ui/animated-card";
+import { FloatingElement } from "@/components/ui/floating-elements";
 
 const Order = () => {
   const [formData, setFormData] = useState({
@@ -128,9 +130,15 @@ const Order = () => {
   return (
     <div className="min-h-screen bg-gradient-hero py-6 md:py-12 px-4">
       <div className="container mx-auto max-w-2xl">
-        <Card className="bg-gradient-card border-border p-4 md:p-8 animate-slide-in">
+        <AnimatedCard 
+          animationType="scale"
+          className="bg-gradient-card border-border p-4 md:p-8"
+        >
+          <Card>
           <div className="text-center mb-6 md:mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2 animate-bounce-gentle">Place Your Order</h1>
+            <FloatingElement floatDirection="up" duration={3} intensity={6}>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Place Your Order</h1>
+            </FloatingElement>
             <p className="text-sm md:text-base text-muted-foreground">Fill out the form below to get your Play Point account</p>
             {!user && (
               <p className="text-xs md:text-sm text-yellow-400 mt-2">
@@ -141,34 +149,55 @@ const Order = () => {
 
           {/* Pricing Plans */}
           <div className="mb-6 md:mb-8">
-            <h3 className="text-lg font-bold text-foreground mb-4 animate-slide-in">Available Plans</h3>
+            <AnimatedCard animationType="fade-left" delay={200} hoverEffect={false}>
+              <h3 className="text-lg font-bold text-foreground mb-4">Available Plans</h3>
+            </AnimatedCard>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="border border-border rounded-lg p-4 bg-background/30 hover:shadow-glow transition-all duration-300 hover:scale-105 animate-slide-in" style={{animationDelay: '0.1s'}}>
+              <AnimatedCard 
+                animationType="fade-up" 
+                delay={300}
+                className="border border-border rounded-lg p-4 bg-background/30 hover:shadow-glow transition-all duration-300"
+              >
                 <div className="text-center">
                   <h4 className="font-bold text-foreground">Basic Account</h4>
-                  <div className="text-xl font-bold text-primary">৳150</div>
+                  <FloatingElement floatDirection="up" duration={2} intensity={3}>
+                    <div className="text-xl font-bold text-primary">৳150</div>
+                  </FloatingElement>
                   <div className="text-sm text-muted-foreground">24hr Delivery</div>
                 </div>
-              </div>
-              <div className="border border-border rounded-lg p-4 bg-background/30 hover:shadow-intense transition-all duration-300 hover:scale-105 animate-slide-in" style={{animationDelay: '0.2s'}}>
+              </AnimatedCard>
+              <AnimatedCard 
+                animationType="scale" 
+                delay={400}
+                className="border border-border rounded-lg p-4 bg-background/30 hover:shadow-intense hover:animate-heartbeat transition-all duration-300"
+              >
                 <div className="text-center">
                   <h4 className="font-bold text-foreground">Premium Account</h4>
-                  <div className="text-xl font-bold text-primary">৳250</div>
+                  <FloatingElement floatDirection="up" duration={2.2} intensity={4}>
+                    <div className="text-xl font-bold text-primary">৳250</div>
+                  </FloatingElement>
                   <div className="text-sm text-muted-foreground">12hr Delivery</div>
                 </div>
-              </div>
-              <div className="border border-border rounded-lg p-4 bg-background/30 hover:shadow-glow transition-all duration-300 hover:scale-105 animate-slide-in" style={{animationDelay: '0.3s'}}>
+              </AnimatedCard>
+              <AnimatedCard 
+                animationType="fade-up" 
+                delay={500}
+                className="border border-border rounded-lg p-4 bg-background/30 hover:shadow-glow transition-all duration-300"
+              >
                 <div className="text-center">
                   <h4 className="font-bold text-foreground">Express Account</h4>
-                  <div className="text-xl font-bold text-primary">৳350</div>
+                  <FloatingElement floatDirection="up" duration={1.8} intensity={5}>
+                    <div className="text-xl font-bold text-primary">৳350</div>
+                  </FloatingElement>
                   <div className="text-sm text-muted-foreground">6hr Delivery</div>
                 </div>
-              </div>
+              </AnimatedCard>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
+            <AnimatedCard animationType="fade-right" delay={600} hoverEffect={false}>
+              <div className="space-y-2">
               <Label htmlFor="gmail" className="text-foreground">Gmail Address *</Label>
               <Input
                 id="gmail"
@@ -180,9 +209,11 @@ const Order = () => {
                 className="bg-background border-border"
               />
               <p className="text-xs text-muted-foreground">This will be used to create your account</p>
-            </div>
+              </div>
+            </AnimatedCard>
 
-            <div className="space-y-2">
+            <AnimatedCard animationType="fade-left" delay={700} hoverEffect={false}>
+              <div className="space-y-2">
               <Label htmlFor="password" className="text-foreground">Preferred Password *</Label>
               <Input
                 id="password"
@@ -193,9 +224,11 @@ const Order = () => {
                 required
                 className="bg-background border-border"
               />
-            </div>
+              </div>
+            </AnimatedCard>
 
-            <div className="space-y-2">
+            <AnimatedCard animationType="fade-right" delay={800} hoverEffect={false}>
+              <div className="space-y-2">
               <Label className="text-foreground">Select Plan *</Label>
               <Select value={formData.selectedPlan} onValueChange={(value) => setFormData({...formData, selectedPlan: value})}>
                 <SelectTrigger className="bg-background border-border">
@@ -207,9 +240,11 @@ const Order = () => {
                   <SelectItem value="express">Express Account - ৳350 (6hr delivery)</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+              </div>
+            </AnimatedCard>
 
-            <div className="space-y-2">
+            <AnimatedCard animationType="fade-left" delay={900} hoverEffect={false}>
+              <div className="space-y-2">
               <Label htmlFor="playPointName" className="text-foreground">Play Point Name</Label>
               <Input
                 id="playPointName"
@@ -218,9 +253,11 @@ const Order = () => {
                 onChange={(e) => setFormData({...formData, playPointName: e.target.value})}
                 className="bg-background border-border"
               />
-            </div>
+              </div>
+            </AnimatedCard>
 
-            <div className="space-y-2">
+            <AnimatedCard animationType="fade-right" delay={1000} hoverEffect={false}>
+              <div className="space-y-2">
               <Label className="text-foreground">Payment Method *</Label>
               <Select value={formData.paymentMethod} onValueChange={(value) => setFormData({...formData, paymentMethod: value})}>
                 <SelectTrigger className="bg-background border-border">
@@ -232,9 +269,11 @@ const Order = () => {
                   <SelectItem value="rocket">Rocket</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+              </div>
+            </AnimatedCard>
 
-            <div className="space-y-2">
+            <AnimatedCard animationType="fade-left" delay={1100} hoverEffect={false}>
+              <div className="space-y-2">
               <Label htmlFor="transactionId" className="text-foreground">Transaction ID *</Label>
               <Input
                 id="transactionId"
@@ -252,9 +291,11 @@ const Order = () => {
                   </span>
                 )}
               </p>
-            </div>
+              </div>
+            </AnimatedCard>
 
-            <div className="flex items-center space-x-2">
+            <AnimatedCard animationType="scale" delay={1200} hoverEffect={false}>
+              <div className="flex items-center space-x-2">
               <Checkbox
                 id="fastDelivery"
                 checked={formData.fastDelivery}
@@ -263,9 +304,11 @@ const Order = () => {
               <Label htmlFor="fastDelivery" className="text-sm text-muted-foreground">
                 Fast Delivery (+৳50 - Priority processing)
               </Label>
-            </div>
+              </div>
+            </AnimatedCard>
 
-            <div className="flex items-center space-x-2">
+            <AnimatedCard animationType="scale" delay={1300} hoverEffect={false}>
+              <div className="flex items-center space-x-2">
               <Checkbox
                 id="terms"
                 checked={formData.termsAccepted}
@@ -274,19 +317,26 @@ const Order = () => {
               <Label htmlFor="terms" className="text-sm text-muted-foreground">
                 I accept the Terms & Conditions and Privacy Policy
               </Label>
-            </div>
+              </div>
+            </AnimatedCard>
 
-            <Button 
-              type="submit" 
-              variant="gaming" 
-              className="w-full"
-              disabled={!formData.gmail || !formData.password || !formData.selectedPlan || !formData.paymentMethod || !formData.transactionId || submitting}
-            >
-              {submitting ? "Submitting Order..." : "Submit Order"}
-            </Button>
+            <AnimatedCard animationType="scale" delay={1400} hoverEffect={false}>
+              <Button 
+                type="submit" 
+                variant="gaming" 
+                className={cn(
+                  "w-full transition-all duration-300",
+                  submitting && "animate-shake",
+                  !submitting && "hover:animate-heartbeat"
+                )}
+                disabled={!formData.gmail || !formData.password || !formData.selectedPlan || !formData.paymentMethod || !formData.transactionId || submitting}
+              >
+                {submitting ? "Submitting Order..." : "Submit Order"}
+              </Button>
+            </AnimatedCard>
           </form>
 
-          <div className="mt-8 p-4 bg-muted/20 rounded-lg">
+          <AnimatedCard animationType="fade-up" delay={1500} className="mt-8 p-4 bg-muted/20 rounded-lg">
             <h3 className="font-bold text-foreground mb-2">Important Notes:</h3>
             <ul className="text-sm text-muted-foreground space-y-1">
               <li>• Account delivery within 6-24 hours</li>
@@ -294,8 +344,9 @@ const Order = () => {
               <li>• Keep your transaction ID safe</li>
               <li>• Contact support for any issues</li>
             </ul>
-          </div>
-        </Card>
+          </AnimatedCard>
+          </Card>
+        </AnimatedCard>
       </div>
     </div>
   );

@@ -3,10 +3,15 @@ import { Card } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { AnimatedCard } from "@/components/ui/animated-card";
+import { TypewriterText } from "@/components/ui/typewriter-text";
+import { FloatingElement } from "@/components/ui/floating-elements";
+import { useStaggeredAnimation } from "@/hooks/useScrollAnimation";
 
 const Home = () => {
   const [pricingPlans, setPricingPlans] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { containerRef: plansRef, visibleItems } = useStaggeredAnimation(3, 200);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -71,61 +76,100 @@ const Home = () => {
       {/* Hero Section */}
       <section className="py-12 md:py-20 px-4">
         <div className="container mx-auto text-center">
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-6 bg-gradient-primary bg-clip-text text-transparent animate-slide-in">
-            Get Your Play Point Account
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-slide-in" style={{animationDelay: '0.2s'}}>
+          <FloatingElement floatDirection="up" duration={4} intensity={8}>
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-6 bg-gradient-primary bg-clip-text text-transparent">
+              <TypewriterText 
+                text="Get Your Play Point Account" 
+                speed={100}
+                startDelay={500}
+              />
+            </h1>
+          </FloatingElement>
+          <AnimatedCard 
+            animationType="fade-up" 
+            delay={1500}
+            hoverEffect={false}
+            className="mb-8"
+          >
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             Professional account creation service with guaranteed delivery. 
             Safe, secure, and affordable gaming accounts for everyone.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-in" style={{animationDelay: '0.4s'}}>
+            </p>
+          </AnimatedCard>
+          <AnimatedCard 
+            animationType="scale" 
+            delay={2000}
+            hoverEffect={false}
+          >
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/order">
-              <Button variant="hero" className="animate-float w-full sm:w-auto">
+              <Button variant="hero" className="animate-float w-full sm:w-auto hover:animate-heartbeat">
                 Order Now
               </Button>
             </Link>
             <Link to="/faq">
-              <Button variant="outline" size="lg" className="w-full sm:w-auto hover:shadow-glow transition-all duration-300">
+              <Button variant="outline" size="lg" className="w-full sm:w-auto hover:shadow-glow hover:animate-wiggle transition-all duration-300">
                 Learn More
               </Button>
             </Link>
-          </div>
+            </div>
+          </AnimatedCard>
         </div>
       </section>
 
       {/* Pricing Section */}
       <section className="py-12 md:py-16 px-4">
         <div className="container mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 text-foreground animate-slide-in">
-            Choose Your Plan
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
+          <AnimatedCard animationType="fade-up" className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+              Choose Your Plan
+            </h2>
+          </AnimatedCard>
+          <div 
+            ref={plansRef}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto"
+          >
             {loading ? (
-              <div className="col-span-full text-center py-8">
+              <AnimatedCard className="col-span-full text-center py-8">
                 <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
-                <p className="text-muted-foreground mt-2">Loading plans...</p>
-              </div>
+                <p className="text-muted-foreground mt-2 skeleton-pulse">Loading plans...</p>
+              </AnimatedCard>
             ) : pricingPlans.map((plan, index) => (
-              <Card 
-                key={plan.id || index} 
-                className="bg-gradient-card border-border p-4 md:p-6 hover:shadow-intense hover:scale-105 transition-all duration-300 animate-slide-in" 
-                style={{animationDelay: `${index * 0.1}s`}}
+              <AnimatedCard
+                key={plan.id || index}
+                animationType={index % 2 === 0 ? 'fade-up' : 'scale'}
+                delay={index * 200}
+                className={cn(
+                  "bg-gradient-card border-border p-4 md:p-6 hover:shadow-intense transition-all duration-300",
+                  visibleItems.includes(index) && "animate-scale-in",
+                  index === 1 && "hover:animate-heartbeat" // Premium plan gets heartbeat
+                )}
               >
-                <div className="text-center">
+                <Card className="h-full">
+                  <div className="text-center p-4 md:p-6">
                   <h3 className="text-lg md:text-xl font-bold mb-2 text-foreground">{plan.name}</h3>
-                  <div className="text-2xl md:text-3xl font-bold text-primary mb-4 md:mb-6">৳{plan.price}</div>
+                  <FloatingElement floatDirection="up" duration={2} intensity={3}>
+                    <div className="text-2xl md:text-3xl font-bold text-primary mb-4 md:mb-6">৳{plan.price}</div>
+                  </FloatingElement>
                   <ul className="space-y-2 md:space-y-3 mb-4 md:mb-6">
                     {(plan.features || []).map((feature, i) => (
-                      <li key={i} className="text-sm md:text-base text-muted-foreground">✓ {feature}</li>
+                      <li 
+                        key={i} 
+                        className="text-sm md:text-base text-muted-foreground animate-fade-in-left"
+                        style={{ animationDelay: `${(index * 200) + (i * 100)}ms` }}
+                      >
+                        ✓ {feature}
+                      </li>
                     ))}
                   </ul>
                   <Link to="/order">
-                    <Button variant="gaming" className="w-full">
+                    <Button variant="gaming" className="w-full hover:animate-shake">
                       Select Plan
                     </Button>
                   </Link>
-                </div>
-              </Card>
+                  </div>
+                </Card>
+              </AnimatedCard>
             ))}
           </div>
         </div>
@@ -134,26 +178,38 @@ const Home = () => {
       {/* Testimonials */}
       <section className="py-12 md:py-16 px-4">
         <div className="container mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 text-foreground animate-slide-in">
-            What Our Customers Say
-          </h2>
+          <AnimatedCard animationType="rotate" className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+              What Our Customers Say
+            </h2>
+          </AnimatedCard>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-4xl mx-auto">
             {testimonials.map((testimonial, index) => (
-              <Card 
-                key={index} 
-                className="bg-gradient-card border-border p-4 md:p-6 hover:shadow-glow hover:scale-105 transition-all duration-300 animate-slide-in" 
-                style={{animationDelay: `${index * 0.1}s`}}
+              <AnimatedCard
+                key={index}
+                animationType={index === 1 ? 'scale' : 'fade-up'}
+                delay={index * 150}
+                className="bg-gradient-card border-border p-4 md:p-6 hover:shadow-glow transition-all duration-300"
               >
-                <div className="text-center">
+                <Card className="h-full">
+                  <div className="text-center p-4 md:p-6">
                   <div className="flex justify-center mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <span key={i} className="text-accent text-lg md:text-xl animate-bounce-gentle" style={{animationDelay: `${i * 0.1}s`}}>★</span>
+                      <FloatingElement 
+                        key={i} 
+                        floatDirection="up" 
+                        duration={2 + i * 0.2} 
+                        intensity={5}
+                      >
+                        <span className="text-accent text-lg md:text-xl">★</span>
+                      </FloatingElement>
                     ))}
                   </div>
                   <p className="text-sm md:text-base text-muted-foreground mb-4">"{testimonial.comment}"</p>
                   <p className="font-bold text-foreground">{testimonial.name}</p>
-                </div>
-              </Card>
+                  </div>
+                </Card>
+              </AnimatedCard>
             ))}
           </div>
         </div>
@@ -162,7 +218,8 @@ const Home = () => {
       {/* Terms Notice */}
       <section className="py-8 px-4 border-t border-border">
         <div className="container mx-auto text-center">
-          <p className="text-sm text-muted-foreground">
+          <AnimatedCard animationType="fade-up" hoverEffect={false}>
+            <p className="text-sm text-muted-foreground">
             By using our service, you agree to our{" "}
             <Link to="/terms" className="text-primary hover:underline">
               Terms & Conditions
@@ -171,7 +228,8 @@ const Home = () => {
             <Link to="/privacy" className="text-primary hover:underline">
               Privacy Policy
             </Link>
-          </p>
+            </p>
+          </AnimatedCard>
         </div>
       </section>
     </div>
